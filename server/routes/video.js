@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-// const { Video } = require("../models/Video");
+const { Video } = require("../models/Video");
 
 
 const multer = require('multer');
@@ -44,7 +44,7 @@ router.post('/thumbnail', (req, res) => {
     let filePath = "";
     let fileDuration = "";
     // 비디오 정보 가져오기 
-    ffmpeg.ffprobe(req.body.url, function(err, metadata) {
+    ffmpeg.ffprobe(req.body.url, function(err, metadata) {        
         fileDuration = metadata.format.duration;
     })
     
@@ -70,6 +70,16 @@ router.post('/thumbnail', (req, res) => {
         size : '320x240',
         // %b : input basename (no ext)
         filename : 'thumbnail-%b.png'
+    })
+
+})
+
+
+router.post('/uploadVideo', (req, res) => {
+    const video = new Video(req.body);
+    video.save( (err, doc) => {
+        if(err) return res.json({success : false, err})
+        res.status(200).json({success: true})
     })
 
 })
