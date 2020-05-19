@@ -84,4 +84,14 @@ router.post('/uploadVideo', (req, res) => {
 
 })
 
+router.get('/getVideos', (req, res) => {    
+    Video.find()
+        .populate('writer') // 이걸 해줘야지 사용자 정보를 가져올수 있다.
+        .exec((err, videos) => {
+            if(err) return res.status(400).send(err)
+            res.status(200).json({success : true, videos})
+        })
+
+})
+
 module.exports = router;
