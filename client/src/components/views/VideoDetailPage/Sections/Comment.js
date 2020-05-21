@@ -1,6 +1,9 @@
 import React, {useState} from 'react'
 import Axios from 'axios'
 import { useSelector } from 'react-redux';
+import SingleComment from './SingleComment';
+import { Button, Input } from 'antd';
+const { TextArea } = Input;
 
 function Comment(props) {
     const videoId = props.videoId;
@@ -13,7 +16,7 @@ function Comment(props) {
     const onSubmit = (event) => {
         event.preventDefault();
         const variable = {
-            comment : commentValue,
+            content : commentValue,
             writer : user.userData._id,
             videoId : videoId
         }
@@ -21,7 +24,8 @@ function Comment(props) {
         Axios.post('/api/comment/saveComment', variable)
             .then(response => {
                 if(response.data.success) {
-                    console.log(response.data);
+                    setcommentValue("")
+                    props.refreshFunction(response.data.result);
                 }else {
                     alert('댓글 작성 실패')
                 }
@@ -35,17 +39,22 @@ function Comment(props) {
             <hr />
 
             {/* Comment List*/}
+            {props.commentLists && props.commentLists.map((comment, index) => 
+               (!comment.responseTo && <SingleComment refreshFunction={props.refreshFunction} comment={comment} videoId={videoId} />)
+            )}
+            
+
 
             {/* Root Comment form */}
             <form style={{ display:'flex' }} onSubmit={onSubmit}>
-                <textarea 
+                <TextArea 
                     style={{ width : '100%',borderRadius : '5px'}}
                     onChange={handleClick}
                     value={commentValue}
                     placeholder="코멘트를 작성하여 주십시오."
                 />
                 <br />
-                <button style={{ width: '20%' , height : '52px'}} onClick>Submit</button>
+                <Button style={{ width: '20%' , height : '52px'}} onClick={onSubmit}>Submit</Button>
             </form>
         </div>
     )
