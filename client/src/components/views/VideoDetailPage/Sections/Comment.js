@@ -3,6 +3,7 @@ import Axios from 'axios'
 import { useSelector } from 'react-redux';
 import SingleComment from './SingleComment';
 import { Button, Input } from 'antd';
+import ReplyComment from './ReplyComment';
 const { TextArea } = Input;
 
 function Comment(props) {
@@ -40,7 +41,13 @@ function Comment(props) {
 
             {/* Comment List*/}
             {props.commentLists && props.commentLists.map((comment, index) => 
-               (!comment.responseTo && <SingleComment refreshFunction={props.refreshFunction} comment={comment} videoId={videoId} />)
+               (!comment.responseTo 
+                && 
+                   <React.Fragment key={index}> 
+                    <SingleComment refreshFunction={props.refreshFunction} comment={comment} videoId={videoId} />
+                    <ReplyComment videoId={videoId} parentCommentId={comment._id} refreshFunction={props.refreshFunction} commentLists={props.commentLists} />
+                   </React.Fragment> 
+                )
             )}
             
 
