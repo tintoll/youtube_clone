@@ -48,6 +48,78 @@ function LikeDisLike(props) {
 
     }, [])
 
+    const onLike = () => {
+        let variable = {}
+        if(props.video) {
+            variable = {videoId : props.videoId,userId : props.userId}
+        }else {
+            variable = {commentId : props.commentId,userId : props.userId}
+        }
+
+        if(LikeActon === null) {
+            Axios.post('/api/like/upLike', variable)
+                .then(response => {
+                    if(response.data.success) {
+                        setLikes(Likes + 1)
+                        setLikeActon('liked')
+
+                        if(DisLikeActon != null) {
+                            setDisLikeActon(null)
+                            setDisLikes(DisLikes - 1)
+                        }
+                    }else {
+                        alert('실패')
+                    }
+                })
+        }else {
+            Axios.post('/api/like/unLike', variable)
+                .then(response => {
+                    if(response.data.success) {
+                        setLikes(Likes - 1)
+                        setLikeActon(null)
+                    }else {
+                        alert('실패')
+                    }
+                })
+        } 
+    }
+
+    const onDisLike = () => {
+        let variable = {}
+        if(props.video) {
+            variable = {videoId : props.videoId,userId : props.userId}
+        }else {
+            variable = {commentId : props.commentId,userId : props.userId}
+        }
+
+        if(DisLikeActon !== null) {
+            Axios.post('/api/like/unDisLike', variable)
+                .then(response => {
+                    if(response.data.success) {
+                       setDisLikes(DisLikes - 1)
+                       setDisLikeActon(null)
+                    }else {
+                        alert('실패')
+                    }
+                })
+        }else {
+            Axios.post('/api/like/upDisLike', variable)
+            .then(response => {
+                if(response.data.success) {
+                   setDisLikes(DisLikes + 1)
+                   setDisLikeActon('disliked')
+                   
+                   if(LikeActon != null) {
+                    setLikeActon(null)
+                    setLikes(Likes - 1)
+                }
+
+                }else {
+                    alert('실패')
+                }
+            })
+        }
+    }
 
     return (
         <div>
@@ -56,21 +128,21 @@ function LikeDisLike(props) {
                     <Icon 
                         type="like"
                         theme={LikeActon === 'liked' ? 'filled':'outlined'}
-                        onClick
+                        onClick={onLike}
                     />
                 </Tooltip>
             </span>
-    <span style={{ paddingLeft : '8px', cursor :'auto'}}> {Likes}</span>
+            <span style={{ paddingLeft : '8px', cursor :'auto'}}> {Likes}</span>&nbsp;&nbsp;
             <span key="comment-basic-dislike"> 
                 <Tooltip title="DisLike">
                     <Icon 
                         type="dislike"
                         theme={DisLikeActon === 'disliked' ? 'filled':'outlined'}
-                        onClick
+                        onClick={onDisLike}
                     />
                 </Tooltip>
             </span>
-            <span style={{ paddingLeft : '8px', cursor :'auto'}}>{DisLikes}</span>
+            <span style={{ paddingLeft : '8px', cursor :'auto'}}>{DisLikes}</span>&nbsp;&nbsp;
         </div>
     )
 }
